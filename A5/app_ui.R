@@ -13,7 +13,7 @@ map_sidebar_content <- sidebarPanel(
 )
 
 map_main_content <- mainPanel(
-  plotlyOutput("map")
+  leafletOutput("Map")
 )
 
 map_panel <- tabPanel(

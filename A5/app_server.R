@@ -1,7 +1,12 @@
 # A5 server.R
 library(dplyr)
+library(ggplot2)
+library(leaflet)
 source('./scripts/build_map1.R')
-source('./scripts/build_scatter1.R')
+
+world_data <- ggplot2::map_data('world')
+names(world_data)[5] <- "country"
+#View(world_data)
 
 # Read in data
 
@@ -37,10 +42,29 @@ highest_per_capita_greenhouse <- co2_data %>%
 filtered_data <- co2_data %>% 
   group_by(country) %>% 
   filter(year == max(year, na.rm = TRUE))
-View(filtered_data)
+#View(filtered_data)
+
+lat_long_df <- left_join(world_data, filtered_data, by = "country")
+#View(lat_long_df)
+
 # Define your shiny server in which you...
 server <- function(input, output) {
-  output$map <- renderPlotly({
-    return(build_map(filtered_data, input$mapvar))
+  output$leafletMap <- renderLeaflet({
+    leaflet(data = lat_long_df) %>% #input$mapvar
+      addMarkers(lng = ~long, lat = ~lat) %>% 
+      addTiles() %>%
+      addProviderTiles(providers$Esri.WorldStreetMap)
   })
 }
+
+
+map <- leaflet() %>%
+  addTiles() %>% 
+  addMarkers()
+#print(map)
+
+
+
+#output$map <- renderPlotly({
+#  return(build_map(filtered_data1, input$mapvar))
+#})
