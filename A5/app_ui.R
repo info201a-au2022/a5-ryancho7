@@ -28,6 +28,7 @@ map_sidebar_content <- sidebarPanel(
 )
 
 map_main_content <- mainPanel(
+  h2("Interactive World Map for CO2 and Other Emissions"),
   leafletOutput("Map"),
   p(paste0("Summary: This interactive map visualization compares countries around the world based on 
            various values such as CO2 emissions, CO2 emissions per capita, CO2 per kilowatt-hour energy, 
@@ -47,7 +48,7 @@ map_main_content <- mainPanel(
 
 map_panel <- tabPanel(
   "Map",
-  titlePanel("A5 Map Test"),
+  titlePanel("CO2 Around the World"),
   sidebarLayout(
     map_sidebar_content,
     map_main_content

@@ -3,10 +3,6 @@ library(dplyr)
 library(ggplot2)
 library(leaflet)
 
-world_data <- ggplot2::map_data('world')
-names(world_data)[5] <- "country"
-#View(world_data)
-
 # Read in data
 
 world_coordinates <- country_coordinates <- read.csv("./data/average-latitude-longitude-countries.csv")
