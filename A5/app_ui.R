@@ -23,11 +23,26 @@ map_sidebar_content <- sidebarPanel(
     choices = list("1850", "1855", "1860", "1865", "1870", "1875", "1880", "1885", "1890", "1895", "1900", "1905", "1910", "1915", "1920", "1925", 
                    "1930", "1935", "1940", "1945", "1950", "1955", "1960", "1965", "1970", "1975", "1980", "1985", "1990", "1995", "2000", "2005",
                    "2010", "2015", "2020", "2021")
-  )
+  ),
+  helpText("Data use in visualization was taken from the OWID-CO2 Dataset found on github"),
 )
 
 map_main_content <- mainPanel(
-  leafletOutput("Map")
+  leafletOutput("Map"),
+  p(paste0("Summary: This interactive map visualization compares countries around the world based on 
+           various values such as CO2 emissions, CO2 emissions per capita, CO2 per kilowatt-hour energy, 
+           CO2 per GDP, CO2 produced by coal, CO2 produced by land-use change, and CO2 produced by 
+           land-use change per capita. I included this visualization because it allows for easy comparison 
+           between different countries since all countries can be viewed at once. This also helps when trying 
+           to identify the existence of potential geographic trends. Looking at the interactive map, I discovered a 
+           trend between GDP and emissions as a whole. Countries that had higher GDP values tended to have much higher 
+           CO2 emission levels in all aspects. For example, countries such as the USA, China, or Russia had 
+           significantly higher levels of CO2 growth, coal based emissions, and emissions overall when compared 
+           to countries with lower GDP values such as  Niger or Chad. This trend can be explained by the fact that more 
+           developed countries have higher GDP values and consequently have the resources to develop massive industries 
+           which release CO2 at a rapid rate."),
+    style = "font-family: 'times'; font-si16pt"
+  )
 )
 
 map_panel <- tabPanel(
@@ -41,6 +56,7 @@ map_panel <- tabPanel(
 
 main_panel <- tabPanel(
   "Intro",
+  shinythemes::themeSelector(),
   titlePanel("CO2 Data Analysis"),
   mainPanel(
     h1("CO2 - A Global Issue", style = "font-family: 'times'; font-si16pt", align = "center"),
