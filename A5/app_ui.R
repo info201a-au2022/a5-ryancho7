@@ -8,7 +8,9 @@ map_sidebar_content <- sidebarPanel(
   selectInput(
     "mapvar",
     label = "Variable to Map",
-    choices = list("Population" = "population", "CO2 Emissions" = "co2")
+    choices = list("CO2 Emissions" = "co2", "Population" = "population", 
+                   "CO2 per capita" = "co2_per_capita", "CO2 Growth" = "co2_growth_abs", 
+                   "CO2 per kilowatt-hour Energy" = "co2_per_unit_energy")
   )
 )
 

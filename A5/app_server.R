@@ -2,7 +2,6 @@
 library(dplyr)
 library(ggplot2)
 library(leaflet)
-source('./scripts/build_map1.R')
 
 world_data <- ggplot2::map_data('world')
 names(world_data)[5] <- "country"
@@ -10,7 +9,11 @@ names(world_data)[5] <- "country"
 
 # Read in data
 
-co2_data <- read.csv('./co2-data/owid-co2-data.csv', stringsAsFactors = FALSE)
+world_coordinates <- country_coordinates <- read.csv("./data/average-latitude-longitude-countries.csv")
+
+codes <- read.csv("./data/countries_codes.csv")
+
+co2_data <- read.csv('./data/owid-co2-data.csv', stringsAsFactors = FALSE)
 
 #data variables
 
@@ -39,32 +42,52 @@ highest_per_capita_greenhouse <- co2_data %>%
   pull(ghg_per_capita)
 #print(highest_per_capita_greenhouse)
 
-filtered_data <- co2_data %>% 
+filtered_data_all_years <- co2_data %>% 
   group_by(country) %>% 
-  filter(year == max(year, na.rm = TRUE))
-#View(filtered_data)
+  select(year, country, iso_code, co2, population, co2_per_capita, co2_growth_abs, co2_per_unit_energy)
+#View(filtered_data_all_years)
+#-----------------------------------------------------------
 
-lat_long_df <- left_join(world_data, filtered_data, by = "country")
-#View(lat_long_df)
+world_coordinates <- world_coordinates %>% 
+  select(code = ISO.3166.Country.Code, lat = Latitude, long = Longitude)
+
+codes <- codes %>% 
+  select(code = alpha.2, iso_code = alpha.3)
+
+world_coordinates <- world_coordinates %>% 
+  left_join(codes, by = "code") %>% 
+  select(iso_code, lat, long)
+
+co2_all_years_coordinates <- filtered_data_all_years %>% 
+  left_join(world_coordinates, by = "iso_code")
 
 # Define your shiny server in which you...
 server <- function(input, output) {
-  output$leafletMap <- renderLeaflet({
-    leaflet(data = lat_long_df) %>% #input$mapvar
-      addMarkers(lng = ~long, lat = ~lat) %>% 
-      addTiles() %>%
-      addProviderTiles(providers$Esri.WorldStreetMap)
+  output$Map <- renderLeaflet({
+    
+    # Construct a color palette (scale) based on chosen analysis variable
+    palette_fn <- colorFactor(
+      palette = "Dark2",
+      domain = co2_all_years_coordinates[[input$mapvar]]
+    )
+    # Create and return the map 
+    leaflet(data = co2_all_years_coordinates) %>%
+      addProviderTiles("Stamen.TonerLite") %>% 
+      addCircleMarkers( 
+        lat = ~lat,
+        lng = ~long,
+        label = ~paste0(country, ", ", co2_all_years_coordinates[[input$mapvar]]),
+        color = ~palette_fn(co2_all_years_coordinates[[input$mapvar]]),
+        fillOpacity = .7,
+        radius = 5,
+        stroke = FALSE
+      ) %>% 
+      addLegend( 
+        "bottomright",
+        title = "Legend",
+        pal = palette_fn, 
+        values = co2_all_years_coordinates[[input$mapvar]],
+        opacity = 1  
+      )
   })
 }
-
-
-map <- leaflet() %>%
-  addTiles() %>% 
-  addMarkers()
-#print(map)
-
-
-
-#output$map <- renderPlotly({
-#  return(build_map(filtered_data1, input$mapvar))
-#})
