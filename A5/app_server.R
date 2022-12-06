@@ -44,7 +44,9 @@ highest_per_capita_greenhouse <- co2_data %>%
 
 filtered_data_all_years <- co2_data %>% 
   group_by(country) %>% 
-  select(year, country, iso_code, co2, population, co2_per_capita, co2_growth_abs, co2_per_unit_energy)
+  select(year, country, iso_code, co2, population, co2_per_capita, co2_growth_abs, 
+         co2_per_unit_energy, co2_per_gdp, coal_co2, coal_co2_per_capita, land_use_change_co2, 
+         land_use_change_co2_per_capita)
 #View(filtered_data_all_years)
 #-----------------------------------------------------------
 
@@ -65,19 +67,22 @@ co2_all_years_coordinates <- filtered_data_all_years %>%
 server <- function(input, output) {
   output$Map <- renderLeaflet({
     
+    co2_all_years_coordinates1 <- co2_all_years_coordinates %>% 
+      filter(year == input$yearvar)
+    
     # Construct a color palette (scale) based on chosen analysis variable
     palette_fn <- colorFactor(
       palette = "Dark2",
-      domain = co2_all_years_coordinates[[input$mapvar]]
+      domain = co2_all_years_coordinates1[[input$mapvar]]
     )
     # Create and return the map 
-    leaflet(data = co2_all_years_coordinates) %>%
+    leaflet(data = co2_all_years_coordinates1) %>%
       addProviderTiles("Stamen.TonerLite") %>% 
       addCircleMarkers( 
         lat = ~lat,
         lng = ~long,
-        label = ~paste0(country, ", ", co2_all_years_coordinates[[input$mapvar]]),
-        color = ~palette_fn(co2_all_years_coordinates[[input$mapvar]]),
+        label = ~paste0(country, ", ", co2_all_years_coordinates1[[input$mapvar]]),
+        color = ~palette_fn(co2_all_years_coordinates1[[input$mapvar]]),
         fillOpacity = .7,
         radius = 5,
         stroke = FALSE
@@ -86,7 +91,7 @@ server <- function(input, output) {
         "bottomright",
         title = "Legend",
         pal = palette_fn, 
-        values = co2_all_years_coordinates[[input$mapvar]],
+        values = co2_all_years_coordinates1[[input$mapvar]],
         opacity = 1  
       )
   })

@@ -3,14 +3,26 @@ library(shiny)
 library(plotly)
 
 source("app_server.R")
-
+#land_use_change_co2, land_use_change_co2_per_capita
 map_sidebar_content <- sidebarPanel(
   selectInput(
     "mapvar",
     label = "Variable to Map",
     choices = list("CO2 Emissions" = "co2", "Population" = "population", 
                    "CO2 per capita" = "co2_per_capita", "CO2 Growth" = "co2_growth_abs", 
-                   "CO2 per kilowatt-hour Energy" = "co2_per_unit_energy")
+                   "CO2 per kilowatt-hour Energy" = "co2_per_unit_energy",
+                   "CO2 per GDP" = "co2_per_gdp",
+                   "CO2 Produced by Coal" = "coal_co2",
+                   "CO2 Produced by Land-Use Change" = "land_use_change_co2",
+                   "CO2 Produced by Land-Use Change per capita" = "land_use_change_co2_per_capita"
+                   )
+  ),
+  selectInput(
+    "yearvar",
+    label = "Select Year",
+    choices = list("1850", "1855", "1860", "1865", "1870", "1875", "1880", "1885", "1890", "1895", "1900", "1905", "1910", "1915", "1920", "1925", 
+                   "1930", "1935", "1940", "1945", "1950", "1955", "1960", "1965", "1970", "1975", "1980", "1985", "1990", "1995", "2000", "2005",
+                   "2010", "2015", "2020", "2021")
   )
 )
 
